@@ -38,8 +38,6 @@ SYLNET_SCRIPT = THISDIR / "SylNet" / "run_SylNet_tf2.py"
 SYLNET_MODEL = THISDIR / "SylNet_model" / "model_1"
 SYLNET_LOG = THISDIR / "sylnet.log"
 
-DEFAULT_RTTM = THISDIR / "output_voice_type_classifier" / "tmp_data" / "all.rttm"
-
 
 def reset_tmp_data(tmp_data):
     """Recreate the scratch tree. Any previous run's intermediates are lost."""
@@ -159,8 +157,7 @@ def main():
     parser.add_argument(
         "--rttm",
         type=Path,
-        default=DEFAULT_RTTM,
-        help="diarization output to split on (default: %(default)s)",
+        help="diarization output to split on, single RTTM file containing all predicted segments for all audios.",
     )
     parser.add_argument(
         "--keep-tmp",

@@ -26,9 +26,9 @@ class RTTMLine:
         fields = line.strip().split(" ")
         return cls(
             uri=fields[1],
-            start_time_s=float(fields[3]),
+            segment_onset_s=float(fields[3]),
             duration_s=float(fields[4]),
-            label=fields[7],
+            speaker=fields[7],
         )
 
 
