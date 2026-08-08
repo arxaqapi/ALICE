@@ -1,0 +1,30 @@
+[project]
+name = "alice"
+version = "0.1.0"
+description = "Automatic LInguistic Unit Count Estimator (ALICE)"
+readme = "README.md"
+license = { file = "docs/license.md" }
+# Lower bound is set by TensorFlow 2 wheel availability (and, on Apple Silicon,
+# by the oldest CPython uv can provide for arm64). The original conda envs
+# pinned python 3.6.7 + tensorflow 1.10, neither of which is installable here.
+requires-python = ">=3.9,<3.13"
+
+dependencies = [
+    # SylNet. run_SylNet_tf2.py drives TF through tensorflow.compat.v1, so the
+    # TF1-era graph code and the SylNet_model/model_1 checkpoint still work.
+    "tensorflow>=2.13",
+    # SylNet_model_tf2.py uses tf.compat.v1.layers, which Keras 3 (bundled with
+    # TF >= 2.16) removed. tf-keras restores the shim, but only when
+    # TF_USE_LEGACY_KERAS=1 is set in the environment before tensorflow is
+    # imported.
+    "tf-keras>=2.16",
+    "librosa>=0.10",
+    "matplotlib>=3.5",
+    "numpy>=1.23",
+    "scipy>=1.9",
+    "soundfile>=0.12",
+]
+
+[tool.uv]
+# Nothing here is importable as a package; the pipeline is a set of scripts.
+package = false
