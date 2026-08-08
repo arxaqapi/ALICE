@@ -28,3 +28,8 @@ dependencies = [
 [tool.uv]
 # Nothing here is importable as a package; the pipeline is a set of scripts.
 package = false
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.2",
+]
