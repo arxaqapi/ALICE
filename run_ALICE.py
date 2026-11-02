@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from datetime import datetime
 
 from extract_basic_features import extract_basic_features
 from getFinalEstimates import get_final_estimates
@@ -91,6 +92,10 @@ def paste_columns(left, right, out):
     out.write_text("".join(f"{a}\t{b}\n" for a, b in zip(left_lines, right_lines)))
 
 
+def log(s: str):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[log][{timestamp}] - {s}")
+
 def run_alice(data_location, rttm, keep_tmp=False):
     curdir = str(THISDIR)
     tmp_data = THISDIR / "tmp_data"
@@ -98,27 +103,35 @@ def run_alice(data_location, rttm, keep_tmp=False):
     short_dir = tmp_data / "short"
     utterance_counts = features / "ALUCs_out_individual.txt"
 
+    log("reset_tmp_data")
     reset_tmp_data(tmp_data)
 
     # prepare_data globs as <arg>*.wav, so a directory needs its trailing separator.
     if data_location.is_dir():
         data_location = f"{data_location}{os.sep}"
+    log("prepare_data")
     prepare_data(curdir, str(data_location))
 
+    log("split_to_utterances")
     split_to_utterances(curdir, rttm_path=str(rttm))
 
     if any(short_dir.iterdir()):
         sylnet_counts = features / "SylNet_out.txt"
+        log("run_sylnet")
         run_sylnet(short_dir, sylnet_counts)
 
+        log("extract_basic_features")
         extract_basic_features(curdir)
 
+        log("paste_columns")
         paste_columns(
             sylnet_counts, features / "other_feats.txt", features / "final_feats.txt"
         )
 
+        log("regress_ALUCs")
         regress_ALUCs(curdir)
 
+        log("paste_columns 2")
         # Attach the filenames SylNet reported back onto the per-utterance counts.
         paste_columns(
             features / "SylNet_out_files.txt",
@@ -130,6 +143,7 @@ def run_alice(data_location, rttm, keep_tmp=False):
         # No adult speech anywhere: every input file gets a zero row below.
         utterance_counts.touch()
 
+    log("get_final_estimates")
     get_final_estimates(curdir, str(tmp_data))
 
     shutil.copyfile(utterance_counts, THISDIR / "ALICE_output_utterances.txt")

@@ -41,7 +41,7 @@ def read_rttm(rttm_path: str | Path):
 
 def split_to_utterances(curdir, rttm_path=None):
     if rttm_path is None:
-        rttm_path = curdir + "/output_voice_type_classifier/tmp_data/all.rttm"
+        raise ValueError("RTTM path should be provided")
 
     curfile = []
     for segment in read_rttm(rttm_path):
